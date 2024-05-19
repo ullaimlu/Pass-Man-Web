@@ -10,7 +10,7 @@ def my_space_tittle(tab:str) -> rx.Component:
         background_color=Color.LILAC.value,
         padding_x="2em",
         padding_y="1em",
-        margin_top="4em"
+        margin_top="1em"
     )
     
 def my_space(tab:str, content:rx.Component) -> rx.Component:

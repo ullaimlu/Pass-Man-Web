@@ -1,14 +1,22 @@
 import reflex as rx
 from PassMan_Web.styles.styles import Color
 from utils.generate import *
+from utils.pipelines import *
+from utils.add import *
 
+#w = WebsitePipeline()
+u= PassManUserPipeline()
+s = SeleniumPipeline()
 
 class FormInputState(rx.State):
     form_data: dict = {}
 
     def handle_submit(self, form_data: dict):
         self.form_data = form_data
-        print(self.form_data)
+        user=self.router.page.params.get("pid", "...")
+        mp=u.get_mp_by_id(int(user))
+        ds=u.get_ds_by_id(int(user))
+        addEntry(mp,ds,self.form_data["sitename"],self.form_data["username"],self.form_data["pass"], int(user), s.get_id_by_name(self.form_data["sitename"]))
         #create_course_guide(self.form_data["course_name"])
 
 class TextfieldControlled(rx.State):
@@ -51,9 +59,9 @@ def sidebar_button1(text: str, icon: str) -> rx.Component:
                 
             #),
             rx.form(
-                rx.text("Website *"),
+                rx.text("Website Name *"),
                 rx.input(placeholder=" ex: Facebook",
-                    name="website_name",
+                    name="sitename",
                     height="2.8em",
                     bg=Color.WHITE.value,
                     radius="full",
@@ -61,7 +69,7 @@ def sidebar_button1(text: str, icon: str) -> rx.Component:
                     width="100%",
                     
                 ),
-                rx.text("Username *"),
+                rx.text("Username or Email *"),
                 rx.input(placeholder=" ex: jd_imllu",
                     name="username",
                     height="2.8em",
@@ -71,19 +79,11 @@ def sidebar_button1(text: str, icon: str) -> rx.Component:
                     width="100%",
                 ),
 
-                rx.text("Gmail"),
-                rx.input(placeholder=" ex: jane.doe@domain.com.",
-                    name="gmail",
-                    height="2.8em",
-                    bg=Color.WHITE.value,
-                    radius="full",
-                    width="100%",
-                ),
                 rx.flex(
                     rx.vstack(
                         rx.text("Password *"),
                         rx.input(placeholder=" ex: 7Rq;lwwj@CV2_sy",
-                            name="password",
+                            name="pass",
                             value=TextfieldControlled.password,
                             height="2.8em",
                             type=PasswordInput.state,
@@ -112,6 +112,7 @@ def sidebar_button1(text: str, icon: str) -> rx.Component:
                                 radius="full",
                                 margin_top="3em",
                                 background_color=Color.PURPLE.value,
+                                type="button",
                                 on_click=PasswordInput.change_state),
                         
                         rx.button("Generate",
@@ -121,7 +122,7 @@ def sidebar_button1(text: str, icon: str) -> rx.Component:
                                 on_click=TextfieldControlled.generate_password),
                         spacing="1",
                     ),
-                    spacing="2"
+                    spacing="2",
                 ),
 
                 rx.flex(

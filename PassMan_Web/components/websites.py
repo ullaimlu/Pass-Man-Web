@@ -1,12 +1,23 @@
 import reflex as rx
 from PassMan_Web.styles.styles import Color
+from selenium_folder.selenium_login import *
 
+
+class SeleniumHandle(rx.State):
+    selenium_id: int=0
+    user: str=""
+    password:str =""
+    def handle_selenium(self, user, password, selenium_id):
+        self.user=user
+        self.password=password
+        self.selenium_id=selenium_id
+        selenium_login(self.user, self.password, self.selenium_id)
 
 def websites(websites) -> rx.Component:
     return rx.flex(
         rx.foreach(
             websites,
-            lambda j: one_website(j[0],j[1],j[2],j[3],j[4],j[5]),
+            lambda j: one_website(j[0],j[1],j[2],j[4],j[3]),
         ),
         flex_wrap="wrap",
         spacing="1",
@@ -14,7 +25,7 @@ def websites(websites) -> rx.Component:
     )
 
 
-def one_website(website: str,username:str,gmail:str,password:str,image:str, url:str) -> rx.Component:
+def one_website(website: str,username:str,password:str,image:str, sid:str) -> rx.Component:
     return rx.card(
         rx.flex(
             rx.inset(
@@ -35,8 +46,7 @@ def one_website(website: str,username:str,gmail:str,password:str,image:str, url:
                 rx.box(
                     rx.text(website, size="5",font_weight="bold"),
                     rx.text(username),
-                    rx.text(gmail),
-                    rx.text(password, type="password"),
+                    rx.text("{hidden}"),
                     color=Color.BLACK.value,
                     width="20em",
                     padding_y="1em",
@@ -52,5 +62,5 @@ def one_website(website: str,username:str,gmail:str,password:str,image:str, url:
         height="10em",
         radius="full",
         background_color=Color.LILAC2.value,
-        on_click=rx.redirect(url, external=True),
+        on_click=SeleniumHandle.handle_selenium(username, password, sid),
     )

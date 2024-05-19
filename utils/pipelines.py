@@ -15,11 +15,47 @@ class PassManUserPipeline(object):
         result = session.execute(passman_user).all()
         session.close()
         return result
+    
+    def get_pass_by_username(self, username):
+        get_sel = select(PassManUser).where(PassManUser.username==username)
+        with self.engine.connect() as conn:
+            result = conn.execute(get_sel)
+            for i in result:
+                return i[3]
+            
+    def get_id_by_username(self, username):
+        get_sel = select(PassManUser).where(PassManUser.username==username)
+        with self.engine.connect() as conn:
+            result = conn.execute(get_sel)
+            for i in result:
+                return i[0]
+            
+    def get_mp_by_id(self, userid):
+        get_sel = select(PassManUser).where(PassManUser.id==userid)
+        with self.engine.connect() as conn:
+            result = conn.execute(get_sel)
+            for i in result:
+                return i[3]
+            
+    def get_ds_by_id(self, userid):
+        get_sel = select(PassManUser).where(PassManUser.id==userid)
+        with self.engine.connect() as conn:
+            result = conn.execute(get_sel)
+            for i in result:
+                return i[4]
+            
+    def get_phone_by_username(self, username):
+        get_sel = select(PassManUser).where(PassManUser.username==username)
+        with self.engine.connect() as conn:
+            result = conn.execute(get_sel)
+            for i in result:
+                return i[2]
 
-    def process_item(self,username,master_password,device_secret):
+    def process_item(self,username,phone,master_password,device_secret):
         session = self.Session()
         passman_user = PassManUser()
         passman_user.username= username
+        passman_user.phone= phone
         passman_user.masterkey_hash = master_password
         passman_user.device_secret = device_secret
 
@@ -51,13 +87,16 @@ class SeleniumPipeline(object):
         get_sel = select(Selenium).where(Selenium.sitename==sitename.lower())
         with self.engine.connect() as conn:
             result = conn.execute(get_sel)
-            return result[0]
+            for i in result:
+                return i[0]
         
     def get_item_by_own_id(self, selenium_id):
         get_sel = select(Selenium).where(Selenium.id==selenium_id)
         with self.engine.connect() as conn:
             result = conn.execute(get_sel)
-            return result
+            for i in result:
+                print(i)
+                return i
 
     def process_item(self,sitename, url, username_id, password_id, button_id):
         session = self.Session()
@@ -98,14 +137,13 @@ class WebsitePipeline(object):
             result = conn.execute(get_webs)
             return result
 
-    def process_item(self, sitename, username, email, password, user_id, selenium_id):
+    def process_item(self, sitename, username, password, user_id, selenium_id):
         session = self.Session()
         website = Website()
         act_user = session.query(PassManUser).get(user_id)
         act_selenium = session.query(Selenium).get(selenium_id)
         website.sitename = sitename
         website.username = username
-        website.email = email
         website.passwd = password
         act_user.websites.append(website)
         act_selenium.websites.append(website)

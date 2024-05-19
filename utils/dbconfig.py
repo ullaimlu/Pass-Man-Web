@@ -22,7 +22,7 @@ db_name = os.getenv("PG_DB")
 port = os.getenv("PORT")
 
 def db_connect():
-    return create_engine(f"postgresql+psycopg2://{user}:{passwrd}@localhost:{port}/{db_name}")
+    return create_engine(f"postgresql+psycopg2://{"mari"}:{"lulita"}@localhost:{"5433"}/{"passman"}")
 
     
 class Base(DeclarativeBase):
@@ -35,6 +35,7 @@ class PassManUser(Base):
     __tablename__ = "passman_user"
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(64),unique=True)
+    phone: Mapped[str] = mapped_column(String(64),unique=True)
     masterkey_hash: Mapped[str] = mapped_column(String(255))
     device_secret: Mapped[str] = mapped_column(String(255))
     websites: Mapped[List["Website"]] = relationship(cascade="all, delete-orphan", lazy="noload")
@@ -53,8 +54,7 @@ class Website(Base):
     __tablename__ = "website"
     id: Mapped[int] = mapped_column(primary_key=True)
     sitename: Mapped[str] = mapped_column(String(64))
-    username: Mapped[str] = mapped_column(String(64))
-    email: Mapped[str] = mapped_column(String(64))  
+    username: Mapped[str] = mapped_column(String(64)) 
     passwd: Mapped[str] = mapped_column(String(64))
     user_id: Mapped[int] = mapped_column(ForeignKey("passman_user.id"))
     selenium_id: Mapped[int] = mapped_column(ForeignKey("selenium.id"))

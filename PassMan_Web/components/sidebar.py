@@ -16,6 +16,7 @@ def sidebar() -> rx.Component:
                     color=Color.GRAY.value,
                     font_size="3em",
                     font_weight="bold"),  
+                
             ),
                 
             sidebar_button1("New","plus"),
