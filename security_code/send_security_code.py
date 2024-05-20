@@ -5,11 +5,11 @@ import string
 
 def send_security_code(phone):
     code=generatecode()
-    send_message(phone, generatecode())
+    send_message(phone, code)
     return code
 
 def send_message(phone, mensaje):
-    url = 'http://localhost:3003/lead'
+    url = 'http://localhost:5433/lead'
     
     data = {
         "message": f"*Your PassMan security code is:* \n \n 🔐 {mensaje}",

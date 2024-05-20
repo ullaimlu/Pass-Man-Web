@@ -22,7 +22,7 @@ db_name = os.getenv("PG_DB")
 port = os.getenv("PORT")
 
 def db_connect():
-    return create_engine(f"postgresql+psycopg2://{"mari"}:{"lulita"}@localhost:{"5433"}/{"passman"}")
+    return create_engine(f"postgresql+psycopg2://{"mari"}:{"lulita"}@localhost:{"5434"}/{"passman"}")
 
     
 class Base(DeclarativeBase):

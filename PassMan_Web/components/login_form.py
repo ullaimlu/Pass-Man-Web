@@ -17,19 +17,22 @@ class SignInState(rx.State):
     sign_in_state: bool = False
     sign_in_state2: bool = False
     user_path: str= ""
+    phone: str=""
 
     def handle_submit(self, form_data: dict):
         try:
             self.form_data = form_data
             hashed_mp = hashlib.sha256(self.form_data["pass"].encode()).hexdigest()       
             passwd=u.get_pass_by_username(self.form_data["email"])
-            phone=u.get_phone_by_username(self.form_data["email"])
+            self.phone=u.get_phone_by_username(self.form_data["email"])
             self.user_path= f"websites/{u.get_id_by_username(self.form_data["email"])}"
             if passwd == hashed_mp:
                 self.sign_in_state= True
-                #self.security_code= send_security_code(phone)
             else: self.sign_in_state= False
         except: pass
+    
+    def send_code(self):
+        self.security_code= send_security_code(self.phone)
 
     def security_code_handle(self, form_data: dict):
         if self.security_code == form_data["security_code"]:
@@ -161,8 +164,16 @@ def login_form() -> rx.Component:
                                 SignInState.sign_in_state,
                                 rx.alert_dialog.content(
                                     rx.alert_dialog.title("Enter the security code"),
-                                    rx.alert_dialog.description(
-                                        "A Security code was sent to your Whatsapp ...",   
+                                    rx.flex(
+                                        rx.alert_dialog.description(
+                                            "A Security code will be sent to your Whatsapp ...",   
+                                        ),
+                                        rx.button(rx.icon("send_horizontal", size=14),
+                                                "Send code",
+                                                radius="full",
+                                                on_click= SignInState.send_code,
+                                                background_color=Color.PURPLE.value,),
+                                        spacing="2"
                                     ),
                                     rx.form(
                                         rx.input(placeholder="Enter the code",
